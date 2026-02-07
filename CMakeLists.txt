@@ -26,5 +26,5 @@ FetchContent_MakeAvailable(SDL3)
 include(GoogleTest)
 
 # Targets
-add_executable(emu src/main.cpp)
-target_link_libraries(emu PRIVATE SDL3::SDL3)
+add_executable(chip8 src/main.cpp)
+target_link_libraries(chip8 PRIVATE SDL3::SDL3)
