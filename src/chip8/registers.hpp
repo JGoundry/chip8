@@ -9,7 +9,7 @@
  *  I  (16-bit):  Generally used to store memory addresses (12 LSB used)
  *  PC (16-bit):  Program counter
  *  SP (8-bit):   Stack pointer
- *  DT (8-bit):   Delay timer (sound)
+ *  DT (8-bit):   Delay timer
  *  ST (8-bit):   Sound timer (sound)
  */
 
@@ -31,6 +31,7 @@ enum GeneralPurposeRegister : std::uint8_t {
   VE,
   VF,
 };
+
 using GPR = std::array<std::uint8_t, 16>;
 
 struct Registers {
