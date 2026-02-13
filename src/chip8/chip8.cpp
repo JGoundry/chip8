@@ -1,5 +1,7 @@
 #include "chip8.hpp"
 
+#include <iostream>
+
 namespace {
 
 constexpr uint8_t getLastNibble(uint16_t i) { return (i & 0x000F); }

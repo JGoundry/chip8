@@ -2,10 +2,9 @@
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_init.h>
 #include <SDL3/SDL_main.h>
+#include <SDL3/SDL_pixels.h>
+#include <SDL3/SDL_render.h>
 
-#include "SDL3/SDL_oldnames.h"
-#include "SDL3/SDL_pixels.h"
-#include "SDL3/SDL_render.h"
 #include "io.hpp"
 
 IO::IO() {
@@ -20,7 +19,7 @@ IO::IO() {
   if (!r_)
     throw SDLError{SDLError::Type::SDL_RENDERER_ERROR, SDL_GetError()};
   SDL_SetRenderLogicalPresentation(r_, 64, 32,
-                                   SDL_LOGICAL_PRESENTATION_STRETCH);
+                                   SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
   t_ = SDL_CreateTexture(r_, SDL_PIXELFORMAT_ARGB8888,
                          SDL_TEXTUREACCESS_STREAMING, 64, 32);
@@ -40,12 +39,9 @@ void IO::pollEvents() {
 
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
-    case SDL_EVENT_KEY_DOWN:
-      break;
-    case SDL_EVENT_KEY_UP:
-      break;
     case SDL_EVENT_QUIT:
       quit_ = true;
+      break;
     default:
       break;
     }
@@ -59,6 +55,35 @@ void IO::render(const VideoBuf &buf) {
   SDL_RenderPresent(r_);
 }
 
-const IO::Keys &IO::getKeys() const { return k_; }
+IO::Keys IO::getKeys() const {
+  int numKeys;
+  const bool *const keyboard = SDL_GetKeyboardState(&numKeys);
+  SDL_PumpEvents();
+
+  // Keyboard:
+  // 1 2 3 4
+  // Q W E R
+  // A S D F
+  // Z X C V
+
+  return {
+      keyboard[SDL_SCANCODE_1],
+      keyboard[SDL_SCANCODE_2],
+      keyboard[SDL_SCANCODE_3],
+      keyboard[SDL_SCANCODE_4],
+      keyboard[SDL_SCANCODE_Q],
+      keyboard[SDL_SCANCODE_W],
+      keyboard[SDL_SCANCODE_E],
+      keyboard[SDL_SCANCODE_R],
+      keyboard[SDL_SCANCODE_A],
+      keyboard[SDL_SCANCODE_S],
+      keyboard[SDL_SCANCODE_D],
+      keyboard[SDL_SCANCODE_F],
+      keyboard[SDL_SCANCODE_Z],
+      keyboard[SDL_SCANCODE_X],
+      keyboard[SDL_SCANCODE_C],
+      keyboard[SDL_SCANCODE_V],
+  };
+}
 
 bool IO::quitSignal() const { return quit_; }

@@ -35,12 +35,11 @@ public:
   void pollEvents();
   void render(const VideoBuf &buf);
   bool quitSignal() const;
-  const Keys &getKeys() const;
+  Keys getKeys() const;
 
 private:
   SDL_Window *w_;
   SDL_Renderer *r_;
   SDL_Texture *t_;
-  Keys k_;
   bool quit_{};
 };
