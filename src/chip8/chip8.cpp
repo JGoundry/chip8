@@ -9,8 +9,8 @@ constexpr uint8_t getLastNibble(uint16_t i) { return (i & 0x000F); }
 /*
  *  Load ROM from disk into memory starting at 0x200
  */
-void Chip8::loadROM(const std::filesystem::path& filepath) {
-
+void Chip8::loadROM(const std::filesystem::path &filepath) {
+  // TODO
 }
 
 /*
@@ -20,12 +20,18 @@ void Chip8::loadROM(const std::filesystem::path& filepath) {
  *  Dispatch to handler for category
  */
 void Chip8::cycle() {
-  --r_.ST;
-  --r_.DT;
+  if (r_.ST)
+    --r_.ST;
+  if (r_.DT)
+    --r_.DT;
+
   instruction_ = (m_[r_.PC] << 8) | m_[r_.PC + 1];
   const uint8_t firstNibble = (instruction_ & 0xF000) >> 12;
   (this->*handlerTable_[firstNibble])();
 }
+
+void Chip8::setKeys(const Keys &k) { k_ = k; }
+const VideoBuf &Chip8::videoBuf() const { return v_; }
 
 /*
  *  Instruction handlers

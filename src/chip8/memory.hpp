@@ -17,7 +17,7 @@ constexpr std::ptrdiff_t StartAddress = 0x200;
  *  for a subroutine. Therefore, Chip-8 allows up to 16 levels of nested subroutines.
  */
 
-using Stack = std::array<std::uint16_t, StackSize>;
+using Stack = std::array<uint16_t, StackSize>;
 
 /*
  *  Chip-8 has 4KB (4096 bytes) of RAM. 0x000 to 0xFFF.
@@ -49,14 +49,14 @@ using Stack = std::array<std::uint16_t, StackSize>;
  *  Source: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.1
  */
 
-using Memory = std::array<std::uint8_t, MemorySize>;
+using Memory = std::array<uint8_t, MemorySize>;
 
 /*
  *  Chip-8 has a built in font for the hex values
  *  Each char is 8x5 in size
  */
 
-constexpr std::array<std::uint8_t, FontsetSize> Fontset{
+constexpr std::array<uint8_t, FontsetSize> Fontset{
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
 	0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2

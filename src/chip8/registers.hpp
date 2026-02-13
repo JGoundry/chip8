@@ -13,7 +13,7 @@
  *  ST (8-bit):   Sound timer (sound)
  */
 
-enum GeneralPurposeRegister : std::uint8_t {
+enum GeneralPurposeRegister : uint8_t {
   V0 = 0,
   V1,
   V2,
@@ -32,13 +32,13 @@ enum GeneralPurposeRegister : std::uint8_t {
   VF,
 };
 
-using GPR = std::array<std::uint8_t, 16>;
+using GPR = std::array<uint8_t, 16>;
 
 struct Registers {
-  std::uint16_t I;
-  std::uint16_t PC;
-  std::uint8_t SP;
-  std::uint8_t DT;
-  std::uint8_t ST;
+  uint16_t I;
+  uint16_t PC;
+  uint8_t SP;
+  uint8_t DT;
+  uint8_t ST;
   GPR gpr;
 };

@@ -3,3 +3,4 @@ a.out
 .cache/
 build/
 Testing/
+vgcore*

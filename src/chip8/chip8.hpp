@@ -1,5 +1,6 @@
 #pragma once
 
+#include "keys.hpp"
 #include "memory.hpp"
 #include "registers.hpp"
 #include "video.hpp"
@@ -12,6 +13,8 @@ class Chip8 final {
 public:
   void loadROM(const std::filesystem::path &filepath);
   void cycle();
+  void setKeys(const Keys &k);
+  const VideoBuf &videoBuf() const;
 
 private:
   void handle0();
@@ -39,6 +42,7 @@ private:
   Stack s_{};
   Registers r_{.PC = StartAddress};
   VideoBuf v_{};
+  Keys k_{};
   HandlerTable handlerTable_{
       &Chip8::handle0, &Chip8::handle1, &Chip8::handle2, &Chip8::handle3,
       &Chip8::handle4, &Chip8::handle5, &Chip8::handle6, &Chip8::handle7,
