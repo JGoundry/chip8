@@ -17,6 +17,20 @@ public:
   const VideoBuf &videoBuf() const;
 
 private:
+  /*
+   *  Helpers
+   */
+  void incPC();
+  void decPC();
+  uint8_t n() const;
+  uint8_t x() const;
+  uint8_t y() const;
+  uint8_t kk() const;
+  uint16_t nnn() const;
+
+  /*
+   *  Instruction handlers
+   */
   void handle0();
   void handle1();
   void handle2();
