@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <exception>
 #include <iostream>
 #include <print>
@@ -8,13 +9,16 @@
 int main(int argc, char **argv) {
   if (argc != 2) {
     std::println("Usage: {} <ROM>", argv[0]);
-    return 1;
+    return EXIT_FAILURE;
   }
 
   try {
     IO io;
     Chip8 chip8;
-    chip8.loadROM(argv[1]);
+    if (!chip8.loadROM(argv[1])) {
+        std::println("Could not load ROM: {}", argv[1]);
+        return EXIT_FAILURE;
+    }
 
     while (true) {
       io.pollEvents();
@@ -36,4 +40,6 @@ int main(int argc, char **argv) {
   } catch (...) {
     std::println(std::cerr, "Caught unknown exception...");
   }
+
+  return EXIT_SUCCESS;
 }

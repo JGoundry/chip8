@@ -1,6 +1,8 @@
 #include "chip8.hpp"
+#include "memory.hpp"
 
-#include <iostream>
+#include <cstdint>
+#include <fstream>
 
 namespace {
 
@@ -11,8 +13,17 @@ constexpr uint8_t getLastNibble(uint16_t i) { return (i & 0x000F); }
 /*
  *  Load ROM from disk into memory starting at 0x200
  */
-void Chip8::loadROM(const std::filesystem::path &filepath) {
-  // TODO
+bool Chip8::loadROM(const std::filesystem::path &filepath) {
+  if (!std::filesystem::exists(filepath))
+    return false;
+
+  std::ifstream file(filepath, std::ios_base::in | std::ios_base::binary);
+  if (!file.is_open())
+      return false;
+
+  file.read(reinterpret_cast<char*>(m_.data() + StartAddress), m_.size() - StartAddress);
+
+  return true;
 }
 
 /*

@@ -11,7 +11,7 @@
 
 class Chip8 final {
 public:
-  void loadROM(const std::filesystem::path &filepath);
+  bool loadROM(const std::filesystem::path &filepath);
   void cycle();
   void setKeys(const Keys &k);
   const VideoBuf &videoBuf() const;
@@ -37,7 +37,7 @@ private:
 private:
   using HandlerTable = std::array<void (Chip8::*)(), 16>;
 
-  uint16_t instruction_;
+  uint16_t instruction_{};
   Memory m_{bootMemory()};
   Stack s_{};
   Registers r_{.PC = StartAddress};
