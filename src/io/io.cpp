@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "SDL3/SDL_surface.h"
 #include "io.hpp"
 
 namespace {
@@ -37,6 +38,7 @@ IO::IO() {
                          SDL_TEXTUREACCESS_STREAMING, bufWidth, bufHeight);
   if (!t_)
     throw SDLError{SDLError::Type::SDL_TEXTURE_ERROR, SDL_GetError()};
+  SDL_SetTextureScaleMode(t_, SDL_SCALEMODE_PIXELART);
 }
 
 IO::~IO() {

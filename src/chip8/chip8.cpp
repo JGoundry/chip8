@@ -250,17 +250,27 @@ void Chip8::handleF() {
     r_.I += r_.gpr[x()];
     break;
   case 0x29: // Fx29 - LD F, Vx
-    std::println("Fx29");
+    r_.I = FontsetStartAddress + r_.gpr[x()] * 5;
     break;
-  case 0x33: // Fx33 - LD B, Vx
-    std::println("Fx33");
+  case 0x33: { // Fx33 - LD B, Vx
+    const uint8_t Vx = r_.gpr[x()];
+    m_[r_.I] = Vx / 100;
+    m_[r_.I + 1] = Vx % 100 / 10;
+    m_[r_.I + 2] = Vx % 10;
     break;
-  case 0x55: // Fx55 - [I], Vx
-    std::println("Fx55");
+  }
+  case 0x55: { // Fx55 - [I], Vx
+    const uint8_t n = x();
+    for (uint8_t i{}; i <= n; ++i)
+      m_[r_.I + i] = r_.gpr[i];
     break;
-  case 0x65: // Fx65 - LD Vx, [I]
-    std::println("Fx65");
+  }
+  case 0x65: { // Fx65 - LD Vx, [I]
+    const uint8_t n = x();
+    for (uint8_t i{}; i <= n; ++i)
+      r_.gpr[i] = m_[r_.I + i];
     break;
+  }
   default:
     break;
   }
