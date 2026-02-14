@@ -22,7 +22,7 @@ struct SDLError {
 class IO final {
 public:
   using Keys = std::array<bool, 16>;
-  using VideoBuf = std::array<uint8_t, 64 * 32>;
+  using VideoBuf = std::array<uint32_t, 64 * 32>;
 
   IO();
   ~IO();
@@ -33,8 +33,8 @@ public:
   IO &operator=(IO &&) = delete;
 
   void pollEvents();
-  void render(const VideoBuf &buf);
-  bool quitSignal() const;
+  void render(const VideoBuf& buf);
+  bool quitSignal() const noexcept;
   Keys getKeys() const;
 
 private:

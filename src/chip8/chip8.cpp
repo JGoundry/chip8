@@ -4,6 +4,10 @@
 #include <cstdint>
 #include <fstream>
 
+// temp
+#include <iostream>
+#include <print>
+
 /*
  *  Load ROM from disk into memory starting at 0x200
  */
@@ -35,35 +39,38 @@ void Chip8::cycle() {
 
   instruction_ = (m_[r_.PC] << 8) | m_[r_.PC + 1];
   incPC();
-  const uint8_t firstNibble = (instruction_ & 0xF000) >> 12;
-  (this->*handlerTable_[firstNibble])();
+  (this->*handlerTable_[h()])();
 }
 
-void Chip8::setKeys(const Keys &k) { k_ = k; }
-const VideoBuf &Chip8::videoBuf() const { return v_; }
+void Chip8::setKeys(const Keys &k) noexcept { k_ = k; }
+const VideoBuf &Chip8::videoBuf() const noexcept { return v_; }
 
 /*
  *  Helpers
  */
-void Chip8::incPC() { r_.PC += 2; }
-void Chip8::decPC() { r_.PC -= 2; }
-uint8_t Chip8::n() const {
+void Chip8::incPC() noexcept { r_.PC += 2; }
+void Chip8::decPC() noexcept { r_.PC -= 2; }
+uint8_t Chip8::h() const noexcept {
+  // h - highest 4 bits of instruction
+  return (0xF000 & instruction_) >> 12;
+}
+uint8_t Chip8::n() const noexcept {
   // n or nibble - lowest 4 bits of instruction
   return (0x000F & instruction_);
 }
-uint8_t Chip8::x() const {
+uint8_t Chip8::x() const noexcept {
   // x - lower 4 bits of MSB
   return (0x0F00 & instruction_) >> 8;
 }
-uint8_t Chip8::y() const {
+uint8_t Chip8::y() const noexcept {
   // y - upper 4 bits of LSB
   return (0x00F0 & instruction_) >> 4;
 }
-uint8_t Chip8::kk() const {
+uint8_t Chip8::kk() const noexcept {
   // kk or byte - LSB
   return (0x00FF & instruction_);
 }
-uint16_t Chip8::nnn() const {
+uint16_t Chip8::nnn() const noexcept {
   // kkk - lowest 12 bits
   return (0x0FFF & instruction_);
 }
@@ -77,7 +84,7 @@ void Chip8::handle0() {
     v_.fill(0);
     break;
   case 0x00EE: // ret
-    r_.PC = s_[r_.SP--];
+    r_.PC = s_[--r_.SP];
     break;
   default: // 0nnn (ignored)
     break;
@@ -89,7 +96,7 @@ void Chip8::handle1() {
 }
 void Chip8::handle2() {
   // CALL addr
-  s_[++r_.SP] = r_.PC;
+  s_[r_.SP++] = r_.PC;
   handle1();
 }
 void Chip8::handle3() {
@@ -121,20 +128,32 @@ void Chip8::handle8() {
     r_.gpr[x()] = r_.gpr[y()];
     break;
   case 0x1: // 8xy1 - OR Vx, Vy
+    r_.gpr[x()] |= r_.gpr[y()];
     break;
   case 0x2: // 8xy2 - AND Vx, Vy
+    r_.gpr[x()] &= r_.gpr[y()];
     break;
   case 0x3: // 8xy3 - XOR Vx, Vy
+    r_.gpr[x()] ^= r_.gpr[y()];
     break;
-  case 0x4: // 8xy4 - ADD Vx, Vy
+  case 0x4: { // 8xy4 - ADD Vx, Vy, set VF = carry
+    const uint16_t result = r_.gpr[x()] + r_.gpr[y()];
+    if (result > 0x00FF)
+      r_.gpr[VF] = 1;
+    r_.gpr[x()] = (result & 0x00FF);
     break;
-  case 0x5: // 8xy5 - SUB Vx, Vy
+  }
+  case 0x5: // 8xy5 - SUB Vx, Vy, set VF = NOT borrow
+    std::println("Handle 8xy5");
     break;
   case 0x6: // 8xy6 - SHR Vx {, Vy}
+    std::println("Handle 8xy6");
     break;
   case 0x7: // 8xy7 - SUBN Vx, Vy
+    std::println("Handle 8xy7");
     break;
   case 0xE: // 8xyE - SHL Vx {, Vy}
+    std::println("Handle 8xyE");
     break;
   default:
     break;
@@ -156,19 +175,50 @@ void Chip8::handleB() {
 void Chip8::handleC() {
   // Cxkk - RND Vx, byte
   r_.gpr[x()] = 0; // TODO: not random
+  std::println("Handle C");
 };
 void Chip8::handleD() {
-  // Dxyn
+  // Dxyn - DRW Vx, Vy, nibble
+  // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF =
+  // collision
+
+  r_.gpr[VF] = 0; // reset collision flag
+
+  const uint8_t nByte = n();
+  const uint8_t col = r_.gpr[x()];
+  const uint8_t row = r_.gpr[y()];
+
+  for (uint8_t byteOffset{}; byteOffset < nByte; ++byteOffset) {
+    const uint8_t byte = m_[r_.I + byteOffset];
+
+    for (uint8_t bitOffset{}; bitOffset < 8; ++bitOffset) {
+      if (byte & (0x80 >> bitOffset)) {
+        const size_t vCol = (col + bitOffset) % 64; // modulo to wrap around
+        const size_t vRow = (row + byteOffset) % 32;
+        const size_t idx = vRow * 64 + vCol;
+
+        // Set carry flag if we have a collision
+        if (v_[idx])
+          r_.gpr[VF] = 1;
+
+        v_[idx] ^= 0xFFFFFFFF;
+      }
+    }
+  }
 };
+
 void Chip8::handleE() {
-  // Ex9E
-  // ExA1
+  std::println("Handle E");
+  // Ex9E - SKP Vx - Skip next instruction if key with value of Vx is pressed
+  // ExA1 - SKNP Vx - Skip next instruction if key with value of Vx is NOT
+  // pressed
 };
 void Chip8::handleF() {
-  // Fx07
-  // Fx0A
-  // Fx15
-  // Fx18
+  std::println("Handle F");
+  // Fx07 - LD Vx, DT
+  // Fx0A - LD Vx, K - Wait for key press, store value of key in Vx
+  // Fx15 - LD DT, Vx
+  // Fx18 - LD ST, Vx
   // Fx1E
   // Fx29
   // Fx33

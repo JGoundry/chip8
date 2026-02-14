@@ -11,22 +11,23 @@
 
 class Chip8 final {
 public:
-  bool loadROM(const std::filesystem::path &filepath);
+  [[nodiscard]] bool loadROM(const std::filesystem::path &filepath);
   void cycle();
-  void setKeys(const Keys &k);
-  const VideoBuf &videoBuf() const;
+  void setKeys(const Keys &k) noexcept;
+  const VideoBuf &videoBuf() const noexcept;
 
 private:
   /*
    *  Helpers
    */
-  void incPC();
-  void decPC();
-  uint8_t n() const;
-  uint8_t x() const;
-  uint8_t y() const;
-  uint8_t kk() const;
-  uint16_t nnn() const;
+  void incPC() noexcept;
+  void decPC() noexcept;
+  uint8_t h() const noexcept;
+  uint8_t n() const noexcept;
+  uint8_t x() const noexcept;
+  uint8_t y() const noexcept;
+  uint8_t kk() const noexcept;
+  uint16_t nnn() const noexcept;
 
   /*
    *  Instruction handlers

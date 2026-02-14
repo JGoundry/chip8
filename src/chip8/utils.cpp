@@ -1,8 +1,10 @@
 #include <iostream>
 #include <iomanip>
+#include <ostream>
 
 #include "utils.hpp"
 #include "memory.hpp"
+#include "video.hpp"
 
 void printMemory(std::ostream& os, const Memory &m) {
   for (size_t i{StartAddress}; i < m.size(); ++i) {
@@ -10,4 +12,11 @@ void printMemory(std::ostream& os, const Memory &m) {
               << static_cast<int>(m[i]) << ' ';
   }
   os << '\n';
+}
+
+void printVideoBuf(std::ostream& os, const VideoBuf &v) {
+    for (const auto& p : v) {
+        os << std::hex << std::setw(8) << std::setfill('0') << p << ' ';
+    }
+    os << '\n';
 }

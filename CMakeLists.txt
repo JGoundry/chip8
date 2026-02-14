@@ -26,7 +26,7 @@ FetchContent_MakeAvailable(SDL3)
 include(GoogleTest)
 
 # Targets
-add_library(chip8_logic STATIC src/chip8/chip8.cpp)
+add_library(chip8_logic STATIC src/chip8/chip8.cpp src/chip8/utils.cpp)
 target_include_directories(chip8_logic PUBLIC src/chip8)
 
 add_library(io STATIC src/io/io.cpp)
