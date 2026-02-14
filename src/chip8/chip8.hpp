@@ -7,10 +7,12 @@
 
 #include <array>
 #include <cstdint>
+#include <functional>
 #include <filesystem>
 
 class Chip8 final {
 public:
+  Chip8(const std::function<uint8_t(void)>& getKeyBlockingFn) noexcept;
   [[nodiscard]] bool loadROM(const std::filesystem::path &filepath);
   void cycle() noexcept;
   void setKeys(const Keys &k) noexcept;
@@ -51,6 +53,8 @@ private:
 
 private:
   using HandlerTable = std::array<void (Chip8::*)() noexcept, 16>;
+
+  std::function<uint8_t(void)> getKeyBlockingFn_;
 
   uint16_t instruction_{};
   Memory m_{bootMemory()};

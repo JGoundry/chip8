@@ -20,3 +20,9 @@ void printVideoBuf(std::ostream& os, const VideoBuf &v) {
     }
     os << '\n';
 }
+
+void printKeys(std::ostream& os, const Keys &k) {
+    for (size_t i{}; i < k.size(); ++i) {
+        std::cout << k[i] << ((i + 1) % 4 == 0 ? '\n' : ' ');
+    } 
+}

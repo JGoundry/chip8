@@ -61,6 +61,73 @@ void IO::pollEvents() noexcept {
   }
 };
 
+uint8_t IO::getKeyBlocking() noexcept {
+  SDL_Event event;
+
+  while (true) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+      case SDL_EVENT_KEY_DOWN:
+        switch (event.key.scancode) {
+        case SDL_SCANCODE_1:
+          return 0x0;
+          break;
+        case SDL_SCANCODE_2:
+          return 0x1;
+          break;
+        case SDL_SCANCODE_3:
+          return 0x2;
+          break;
+        case SDL_SCANCODE_4:
+          return 0x3;
+          break;
+        case SDL_SCANCODE_Q:
+          return 0x4;
+          break;
+        case SDL_SCANCODE_W:
+          return 0x5;
+          break;
+        case SDL_SCANCODE_E:
+          return 0x6;
+          break;
+        case SDL_SCANCODE_R:
+          return 0x7;
+          break;
+        case SDL_SCANCODE_A:
+          return 0x8;
+          break;
+        case SDL_SCANCODE_S:
+          return 0x9;
+          break;
+        case SDL_SCANCODE_D:
+          return 0xA;
+          break;
+        case SDL_SCANCODE_F:
+          return 0xB;
+          break;
+        case SDL_SCANCODE_Z:
+          return 0xC;
+          break;
+        case SDL_SCANCODE_X:
+          return 0xD;
+          break;
+        case SDL_SCANCODE_C:
+          return 0xE;
+          break;
+        case SDL_SCANCODE_V:
+          return 0xF;
+          break;
+        default:
+          break;
+        }
+      default:
+        break;
+      }
+    }
+  }
+  return 0;
+}
+
 void IO::render(const VideoBuf &buf) noexcept {
   SDL_UpdateTexture(t_, nullptr, buf.data(), bufWidth * sizeof(uint32_t));
   SDL_RenderClear(r_);

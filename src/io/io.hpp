@@ -9,9 +9,7 @@ struct SDL_Renderer;
 struct SDL_Texture;
 
 struct IOError {
-  enum Type {
-    INIT_ERROR = 0
-  };
+  enum Type { INIT_ERROR = 0 };
   const Type t;
   const std::string msg;
 };
@@ -30,7 +28,8 @@ public:
   IO &operator=(IO &&) = delete;
 
   void pollEvents() noexcept;
-  void render(const VideoBuf& buf) noexcept;
+  uint8_t getKeyBlocking() noexcept;
+  void render(const VideoBuf &buf) noexcept;
   bool quitSignal() const noexcept;
   Keys getKeys() const noexcept;
 

@@ -14,10 +14,10 @@ int main(int argc, char **argv) {
 
   try {
     IO io;
-    Chip8 chip8;
+    Chip8 chip8([&io]() { return io.getKeyBlocking(); });
     if (!chip8.loadROM(argv[1])) {
-        std::println("Could not load ROM: {}", argv[1]);
-        return EXIT_FAILURE;
+      std::println("Could not load ROM: {}", argv[1]);
+      return EXIT_FAILURE;
     }
 
     while (true) {

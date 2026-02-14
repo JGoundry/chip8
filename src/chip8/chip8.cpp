@@ -7,6 +7,9 @@
 // temp
 #include <print>
 
+Chip8::Chip8(const std::function<uint8_t(void)> &getKeyBlockingFn) noexcept
+    : getKeyBlockingFn_(getKeyBlockingFn) {}
+
 /*
  *  Load ROM from disk into memory starting at 0x200
  */
@@ -186,7 +189,7 @@ void Chip8::handleB() noexcept {
 };
 void Chip8::handleC() noexcept {
   // Cxkk - RND Vx, byte
-  r_.gpr[x()] = 0; // TODO: not random
+  r_.gpr[x()] = 0;      // TODO: not random
   std::println("Cxkk"); // will remove later (noexcept i know...)
 };
 void Chip8::handleD() noexcept {
@@ -238,7 +241,7 @@ void Chip8::handleF() noexcept {
     r_.gpr[x()] = r_.DT;
     break;
   case 0x0A: // Fx0A - LD Vx, K - Wait for key press, store value of key in Vx
-    std::println("Fx0A"); // remove later (hi noexcept)
+    r_.gpr[x()] = getKeyBlockingFn_();
     break;
   case 0x15: // Fx15 - LD DT, Vx
     r_.DT = r_.gpr[x()];
