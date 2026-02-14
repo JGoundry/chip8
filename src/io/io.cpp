@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "SDL3/SDL_surface.h"
 #include "io.hpp"
 
 namespace {
@@ -22,22 +21,22 @@ constexpr auto windowHeight{640};
 
 IO::IO() {
   if (!SDL_Init(SDL_INIT_VIDEO))
-    throw SDLError{SDLError::Type::SDL_INIT_ERROR, SDL_GetError()};
+    throw IOError{IOError::Type::INIT_ERROR, SDL_GetError()};
 
   w_ = SDL_CreateWindow("CHIP8", windowWidth, windowHeight, 0);
   if (!w_)
-    throw SDLError{SDLError::Type::SDL_WINDOW_ERROR, SDL_GetError()};
+    throw IOError{IOError::Type::INIT_ERROR, SDL_GetError()};
 
   r_ = SDL_CreateRenderer(w_, nullptr);
   if (!r_)
-    throw SDLError{SDLError::Type::SDL_RENDERER_ERROR, SDL_GetError()};
+    throw IOError{IOError::Type::INIT_ERROR, SDL_GetError()};
   SDL_SetRenderLogicalPresentation(r_, bufWidth, bufHeight,
                                    SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
   t_ = SDL_CreateTexture(r_, SDL_PIXELFORMAT_ARGB8888,
                          SDL_TEXTUREACCESS_STREAMING, bufWidth, bufHeight);
   if (!t_)
-    throw SDLError{SDLError::Type::SDL_TEXTURE_ERROR, SDL_GetError()};
+    throw IOError{IOError::Type::INIT_ERROR, SDL_GetError()};
   SDL_SetTextureScaleMode(t_, SDL_SCALEMODE_PIXELART);
 }
 

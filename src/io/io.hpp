@@ -8,12 +8,9 @@ struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
 
-struct SDLError {
+struct IOError {
   enum Type {
-    SDL_INIT_ERROR = 0,
-    SDL_WINDOW_ERROR,
-    SDL_RENDERER_ERROR,
-    SDL_TEXTURE_ERROR
+    INIT_ERROR = 0
   };
   const Type t;
   const std::string msg;
