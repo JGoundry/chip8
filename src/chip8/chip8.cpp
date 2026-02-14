@@ -5,7 +5,6 @@
 #include <fstream>
 
 // temp
-#include <iostream>
 #include <print>
 
 /*
@@ -138,23 +137,36 @@ void Chip8::handle8() {
     break;
   case 0x4: { // 8xy4 - ADD Vx, Vy, set VF = carry
     const uint16_t result = r_.gpr[x()] + r_.gpr[y()];
-    if (result > 0x00FF)
-      r_.gpr[VF] = 1;
+    r_.gpr[VF] = result > 0x00FF;
     r_.gpr[x()] = (result & 0x00FF);
     break;
   }
-  case 0x5: // 8xy5 - SUB Vx, Vy, set VF = NOT borrow
-    std::println("Handle 8xy5");
+  case 0x5: { // 8xy5 - SUB Vx, Vy, set VF = NOT borrow
+    const uint8_t Vx = x();
+    const uint8_t Vy = y();
+    r_.gpr[VF] = r_.gpr[Vx] > r_.gpr[Vy];
+    r_.gpr[Vx] -= r_.gpr[Vy];
     break;
-  case 0x6: // 8xy6 - SHR Vx {, Vy}
-    std::println("Handle 8xy6");
+  }
+  case 0x6: { // 8xy6 - SHR Vx {, Vy} - ignoring Vy
+    const uint8_t Vx = x();
+    r_.gpr[VF] = 0x01 & r_.gpr[Vx];
+    r_.gpr[Vx] >>= 1;
     break;
-  case 0x7: // 8xy7 - SUBN Vx, Vy
-    std::println("Handle 8xy7");
+  }
+  case 0x7: { // 8xy7 - SUBN Vx, Vy
+    const uint8_t Vx = x();
+    const uint8_t Vy = y();
+    r_.gpr[VF] = r_.gpr[Vy] > r_.gpr[Vx];
+    r_.gpr[Vx] = r_.gpr[Vy] - r_.gpr[Vx];
     break;
-  case 0xE: // 8xyE - SHL Vx {, Vy}
-    std::println("Handle 8xyE");
+  }
+  case 0xE: { // 8xyE - SHL Vx {, Vy} - ignoring Xy
+    const uint8_t Vx = x();
+    r_.gpr[VF] = 0x80 & r_.gpr[Vx];
+    r_.gpr[Vx] <<= 1;
     break;
+  }
   default:
     break;
   }
@@ -175,7 +187,7 @@ void Chip8::handleB() {
 void Chip8::handleC() {
   // Cxkk - RND Vx, byte
   r_.gpr[x()] = 0; // TODO: not random
-  std::println("Handle C");
+  std::println("Cxkk");
 };
 void Chip8::handleD() {
   // Dxyn - DRW Vx, Vy, nibble
@@ -206,22 +218,50 @@ void Chip8::handleD() {
     }
   }
 };
-
 void Chip8::handleE() {
-  std::println("Handle E");
-  // Ex9E - SKP Vx - Skip next instruction if key with value of Vx is pressed
-  // ExA1 - SKNP Vx - Skip next instruction if key with value of Vx is NOT
-  // pressed
+  switch (kk()) {
+  case 0x9E: // Ex9E - SKP Vx - Skip next instruction if key Vx pressed
+    if (k_[x()])
+      incPC();
+    break;
+  case 0xA1: // ExA1 - SKNP Vx - Skip next instruction if key Vx NOT pressed
+    if (!k_[x()])
+      incPC();
+    break;
+  default:
+    break;
+  }
 };
 void Chip8::handleF() {
-  std::println("Handle F");
-  // Fx07 - LD Vx, DT
-  // Fx0A - LD Vx, K - Wait for key press, store value of key in Vx
-  // Fx15 - LD DT, Vx
-  // Fx18 - LD ST, Vx
-  // Fx1E
-  // Fx29
-  // Fx33
-  // Fx55
-  // Fx65
+  switch (kk()) {
+  case 0x07: // Fx07 - LD Vx, DT
+    r_.gpr[x()] = r_.DT;
+    break;
+  case 0x0A: // Fx0A - LD Vx, K - Wait for key press, store value of key in Vx
+    std::println("Fx0A");
+    break;
+  case 0x15: // Fx15 - LD DT, Vx
+    r_.DT = r_.gpr[x()];
+    break;
+  case 0x18: // Fx18 - LD ST, Vx
+    r_.ST = r_.gpr[x()];
+    break;
+  case 0x1E: // Fx1E - ADD I, Vx
+    r_.I += r_.gpr[x()];
+    break;
+  case 0x29: // Fx29 - LD F, Vx
+    std::println("Fx29");
+    break;
+  case 0x33: // Fx33 - LD B, Vx
+    std::println("Fx33");
+    break;
+  case 0x55: // Fx55 - [I], Vx
+    std::println("Fx55");
+    break;
+  case 0x65: // Fx65 - LD Vx, [I]
+    std::println("Fx65");
+    break;
+  default:
+    break;
+  }
 };
