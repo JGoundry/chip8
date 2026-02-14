@@ -32,10 +32,10 @@ public:
   IO(IO &&) = delete;
   IO &operator=(IO &&) = delete;
 
-  void pollEvents();
-  void render(const VideoBuf& buf);
+  void pollEvents() noexcept;
+  void render(const VideoBuf& buf) noexcept;
   bool quitSignal() const noexcept;
-  Keys getKeys() const;
+  Keys getKeys() const noexcept;
 
 private:
   SDL_Window *w_;

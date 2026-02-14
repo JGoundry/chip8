@@ -12,7 +12,7 @@
 class Chip8 final {
 public:
   [[nodiscard]] bool loadROM(const std::filesystem::path &filepath);
-  void cycle();
+  void cycle() noexcept;
   void setKeys(const Keys &k) noexcept;
   const VideoBuf &videoBuf() const noexcept;
 
@@ -32,25 +32,25 @@ private:
   /*
    *  Instruction handlers
    */
-  void handle0();
-  void handle1();
-  void handle2();
-  void handle3();
-  void handle4();
-  void handle5();
-  void handle6();
-  void handle7();
-  void handle8();
-  void handle9();
-  void handleA();
-  void handleB();
-  void handleC();
-  void handleD();
-  void handleE();
-  void handleF();
+  void handle0() noexcept;
+  void handle1() noexcept;
+  void handle2() noexcept;
+  void handle3() noexcept;
+  void handle4() noexcept;
+  void handle5() noexcept;
+  void handle6() noexcept;
+  void handle7() noexcept;
+  void handle8() noexcept;
+  void handle9() noexcept;
+  void handleA() noexcept;
+  void handleB() noexcept;
+  void handleC() noexcept;
+  void handleD() noexcept;
+  void handleE() noexcept;
+  void handleF() noexcept;
 
 private:
-  using HandlerTable = std::array<void (Chip8::*)(), 16>;
+  using HandlerTable = std::array<void (Chip8::*)() noexcept, 16>;
 
   uint16_t instruction_{};
   Memory m_{bootMemory()};

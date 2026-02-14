@@ -48,7 +48,7 @@ IO::~IO() {
   SDL_Quit();
 }
 
-void IO::pollEvents() {
+void IO::pollEvents() noexcept {
   SDL_Event event;
 
   while (SDL_PollEvent(&event)) {
@@ -62,14 +62,14 @@ void IO::pollEvents() {
   }
 };
 
-void IO::render(const VideoBuf &buf) {
+void IO::render(const VideoBuf &buf) noexcept {
   SDL_UpdateTexture(t_, nullptr, buf.data(), bufWidth * sizeof(uint32_t));
   SDL_RenderClear(r_);
   SDL_RenderTexture(r_, t_, nullptr, nullptr);
   SDL_RenderPresent(r_);
 }
 
-IO::Keys IO::getKeys() const {
+IO::Keys IO::getKeys() const noexcept {
   SDL_PumpEvents();
 
   int numKeys;

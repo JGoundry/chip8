@@ -30,7 +30,7 @@ bool Chip8::loadROM(const std::filesystem::path &filepath) {
  *  Decode first nibble (4 bits) to get instruction category
  *  Dispatch to handler for category
  */
-void Chip8::cycle() {
+void Chip8::cycle() noexcept {
   if (r_.ST)
     --r_.ST;
   if (r_.DT)
@@ -77,7 +77,7 @@ uint16_t Chip8::nnn() const noexcept {
 /*
  *  Instruction handlers
  */
-void Chip8::handle0() {
+void Chip8::handle0() noexcept {
   switch (instruction_) {
   case 0x00E0: // cls
     v_.fill(0);
@@ -89,39 +89,39 @@ void Chip8::handle0() {
     break;
   }
 }
-void Chip8::handle1() {
+void Chip8::handle1() noexcept {
   // JP addr
   r_.PC = nnn();
 }
-void Chip8::handle2() {
+void Chip8::handle2() noexcept {
   // CALL addr
   s_[r_.SP++] = r_.PC;
   handle1();
 }
-void Chip8::handle3() {
+void Chip8::handle3() noexcept {
   // 3xkk SE Vx, byte - Skip next instruction if Vx == kk
   if (r_.gpr[x()] == kk())
     incPC();
 }
-void Chip8::handle4() {
+void Chip8::handle4() noexcept {
   // 4xkk SNE Vx, byte - Skip next instruction if Vx != kk
   if (r_.gpr[x()] != kk())
     incPC();
 }
-void Chip8::handle5() {
+void Chip8::handle5() noexcept {
   // 5xy0 SE Vx, Vy - Skip next instruction if Vx == Vy
   if (r_.gpr[x()] == r_.gpr[y()])
     incPC();
 }
-void Chip8::handle6() {
+void Chip8::handle6() noexcept {
   // 6xkk - LD Vx, byte
   r_.gpr[x()] = kk();
 }
-void Chip8::handle7() {
+void Chip8::handle7() noexcept {
   // 7xkk - ADD Vx, byte
   r_.gpr[x()] += kk();
 }
-void Chip8::handle8() {
+void Chip8::handle8() noexcept {
   switch (n()) {
   case 0x0: // 8xy0 - LD Vx, Vy
     r_.gpr[x()] = r_.gpr[y()];
@@ -171,25 +171,25 @@ void Chip8::handle8() {
     break;
   }
 }
-void Chip8::handle9() {
+void Chip8::handle9() noexcept {
   // 9xy0 - SNE Vx, Vy - Skip next instruction if Vx != Vy
   if (r_.gpr[x()] != r_.gpr[y()])
     incPC();
 }
-void Chip8::handleA() {
+void Chip8::handleA() noexcept {
   // Annn - LD I, adrr
   r_.I = nnn();
 };
-void Chip8::handleB() {
+void Chip8::handleB() noexcept {
   // Bnnn - JP V0, addr - jump to nnn + V0
   r_.PC = r_.gpr[V0] + nnn();
 };
-void Chip8::handleC() {
+void Chip8::handleC() noexcept {
   // Cxkk - RND Vx, byte
   r_.gpr[x()] = 0; // TODO: not random
-  std::println("Cxkk");
+  std::println("Cxkk"); // will remove later (noexcept i know...)
 };
-void Chip8::handleD() {
+void Chip8::handleD() noexcept {
   // Dxyn - DRW Vx, Vy, nibble
   // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF =
   // collision
@@ -218,7 +218,7 @@ void Chip8::handleD() {
     }
   }
 };
-void Chip8::handleE() {
+void Chip8::handleE() noexcept {
   switch (kk()) {
   case 0x9E: // Ex9E - SKP Vx - Skip next instruction if key Vx pressed
     if (k_[x()])
@@ -232,13 +232,13 @@ void Chip8::handleE() {
     break;
   }
 };
-void Chip8::handleF() {
+void Chip8::handleF() noexcept {
   switch (kk()) {
   case 0x07: // Fx07 - LD Vx, DT
     r_.gpr[x()] = r_.DT;
     break;
   case 0x0A: // Fx0A - LD Vx, K - Wait for key press, store value of key in Vx
-    std::println("Fx0A");
+    std::println("Fx0A"); // remove later (hi noexcept)
     break;
   case 0x15: // Fx15 - LD DT, Vx
     r_.DT = r_.gpr[x()];
